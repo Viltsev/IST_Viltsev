@@ -2,7 +2,6 @@ import os
 import asyncio
 import uuid
 from io import BytesIO
-
 import httpx
 from bs4 import BeautifulSoup
 import requests
@@ -46,42 +45,42 @@ async def scrapeImageURL(html):
     return image_urls
 
 # image compressor
-async def compressImage(image_content, image_path, quality=70, maxSize=1024 * 1024):
-    if len(image_content) > maxSize:
-        with Image.open(BytesIO(image_content)) as img:
-            img.save(image_path, optimize=True, quality=quality)
+async def compressImage(imageContent, imagePath, quality=70, maxSize=1024 * 1024):
+    if len(imageContent) > maxSize:
+        with Image.open(BytesIO(imageContent)) as img:
+            img.save(imagePath, optimize=True, quality=quality)
     else:
-        with open(image_path, 'wb') as f:
-            f.write(image_content)
+        with open(imagePath, 'wb') as f:
+            f.write(imageContent)
 
 
-async def crawler(start_url, directory, visited_urls):
+async def crawler(startURL, directory, visitedUrls):
     # if we haven't visited the page
-    if start_url not in visited_urls:
-        visited_urls.add(start_url)
+    if startURL not in visitedUrls:
+        visitedUrls.add(startURL)
         # save visited urls into the file
         with open("visitedURL.txt", "w") as f:
-            f.write("\n".join(visited_urls))
+            f.write("\n".join(visitedUrls))
 
         # load images from the page
-        await loadPageImages(start_url, directory)
+        await loadPageImages(startURL, directory)
     else:
         # else check the next pages
         print("this page has been visited! going to the next page...")
 
 
-    html = await fetch(start_url)
+    html = await fetch(startURL)
     soup = BeautifulSoup(html, 'lxml')
 
     nextPage = soup.find("a", class_ = "next").get("href")
     nextPageUrl = "https://nos.twnsnd.co" + nextPage
 
-    task = crawler(nextPageUrl, directory, visited_urls)
+    task = crawler(nextPageUrl, directory, visitedUrls)
     await asyncio.gather(task)
 
 
 async def main():
-    start_url = "https://nos.twnsnd.co/"
+    startURL = "https://nos.twnsnd.co/"
     # folder which saves our images
     directory = 'images'
     visitedURL = set()
@@ -95,7 +94,7 @@ async def main():
         os.makedirs(directory)
 
     # start the crawler
-    await crawler(start_url, directory, visitedURL)
+    await crawler(startURL, directory, visitedURL)
 
 
 if __name__ == "__main__":
