@@ -29,11 +29,18 @@ async def saveImage(url, directory):
 
 
 # load images from the page
-async def loadPageImages(url, directory):
+async def loadPageImages(url, directory, imageCount):
+    currentCount = imageCount
     html = await fetch(url)
-    image_urls = await scrapeImageURL(html)
-    tasks = [saveImage(img_url, directory) for img_url in image_urls]
+    imageUrls = await scrapeImageURL(html)
+    tasks = []
+    for imgURL in imageUrls:
+        # check: can we scrape images
+        if len(tasks) < imageCount:
+            tasks.append(saveImage(imgURL, directory))
+            currentCount -= 1
     await asyncio.gather(*tasks)
+    return currentCount
 
 
 # image url scraper
@@ -54,7 +61,8 @@ async def compressImage(imageContent, imagePath, quality=70, maxSize=1024 * 1024
             f.write(imageContent)
 
 
-async def crawler(startURL, directory, visitedUrls):
+async def crawler(startURL, directory, visitedUrls, imageCount):
+    currentCount = imageCount
     # if we haven't visited the page
     if startURL not in visitedUrls:
         visitedUrls.add(startURL)
@@ -63,23 +71,27 @@ async def crawler(startURL, directory, visitedUrls):
             f.write("\n".join(visitedUrls))
 
         # load images from the page
-        await loadPageImages(startURL, directory)
+        currentCount = await loadPageImages(startURL, directory, imageCount)
+
     else:
         # else check the next pages
         print("this page has been visited! going to the next page...")
 
+    if currentCount > 0:
+        html = await fetch(startURL)
+        soup = BeautifulSoup(html, 'lxml')
 
-    html = await fetch(startURL)
-    soup = BeautifulSoup(html, 'lxml')
+        nextPage = soup.find("a", class_="next").get("href")
+        nextPageUrl = "https://nos.twnsnd.co" + nextPage
 
-    nextPage = soup.find("a", class_ = "next").get("href")
-    nextPageUrl = "https://nos.twnsnd.co" + nextPage
+        task = crawler(nextPageUrl, directory, visitedUrls, imageCount)
+        await asyncio.gather(task)
+    else:
+        print("по фотографиям все")
+        return
 
-    task = crawler(nextPageUrl, directory, visitedUrls)
-    await asyncio.gather(task)
 
-
-async def main():
+async def main(imageCount: int):
     startURL = "https://nos.twnsnd.co/"
     # folder which saves our images
     directory = 'images'
@@ -94,8 +106,8 @@ async def main():
         os.makedirs(directory)
 
     # start the crawler
-    await crawler(startURL, directory, visitedURL)
+    await crawler(startURL, directory, visitedURL, imageCount)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main(imageCount=4))
