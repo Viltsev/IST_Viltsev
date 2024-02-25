@@ -1,8 +1,8 @@
 *.DS_Store
 ._*
 
-/Users/danila/Desktop/ist/application/images/
-/Users/danila/Desktop/ist/application/visitedURL.txt/
+application/images/
+application/visitedURL.txt/
 
 __pycache__/
 *.py[cod]
