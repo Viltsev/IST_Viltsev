@@ -4,7 +4,7 @@
 application/.postgres/
 application/.container_images/
 application/app/images/
-application/app/visitedURL.txt
+application/app/visitedURL.txt/
 
 __pycache__/
 *.py[cod]
