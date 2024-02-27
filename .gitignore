@@ -1,8 +1,10 @@
 *.DS_Store
 ._*
 
-application/images/
-application/visitedURL.txt/
+application/.postgres/
+application/.container_images/
+application/app/images/
+application/app/visitedURL.txt
 
 __pycache__/
 *.py[cod]

@@ -7,13 +7,12 @@ from bs4 import BeautifulSoup
 import requests
 from PIL import Image
 import logging
-from context import ctx
+from app.context import ctx
 import hashlib
-from model.database import ImageData, Base
+from app.model.database import ImageData, Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import base64
-import psycopg2
 
 # fetch urls
 async def fetch(url):

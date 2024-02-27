@@ -1,9 +1,7 @@
-import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from context import ctx
-import scraper
-
+from app.context import ctx
+from app import scraper
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
