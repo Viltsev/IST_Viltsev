@@ -37,11 +37,10 @@ async def saveImage(url, directory, db_session):
             # add image to database
             # get id for image
             imageId = hashlib.md5(response.content).hexdigest()
-            # get base64 code for image
-            imageBase64 = base64.b64encode(response.content).decode('utf-8')
-            image = ImageData(id=imageId, data=imageBase64)
+            # save image path to database
+            image = ImageData(id=imageId, data=imagePath)
             db_session.add(image)
-            logging.info("Image has been added to database successfully")
+            logging.info("Image path has been added to database successfully")
 
 
 # load images from the page
@@ -116,7 +115,7 @@ async def main(startUrl, directory, imageCount: int, visitedUrls):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    visitedURL = set()
+    visitedURL = visitedUrls
 
     if os.path.exists("visitedURL.txt"):
         with open("visitedURL.txt", "r") as f:
