@@ -2,10 +2,8 @@ import os
 import random
 import cv2
 
-def background_insertion(directory='imagesWithoutBackground/', background="background.jpg", imageCount=5):
-    newDirectory = 'imagesWithBackground/'
-    os.makedirs(newDirectory, exist_ok=True)
 
+async def background_insertion(newDirectory, imageCount, directory, background):
     files = os.listdir(directory)
     randomImages = random.sample(files, imageCount)
 
@@ -49,5 +47,3 @@ def background_insertion(directory='imagesWithoutBackground/', background="backg
         # Save result
         new_image_path = os.path.join(newDirectory, image)
         cv2.imwrite(new_image_path, result)
-
-background_insertion()

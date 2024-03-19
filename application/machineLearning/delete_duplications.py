@@ -1,17 +1,16 @@
 import os
 from PIL import Image, UnidentifiedImageError
 import imagehash
-import matplotlib.pyplot as plt
+import logging
 
-def find_duplicates(directory):
+
+async def find_duplicates(directory):
     # make empty dictionary to save hash of images and paths to duplicates
     hash_dict = {}
     duplicate_images = {}
 
     # check all files in the next directory
     for filename in os.listdir(directory):
-        if filename.endswith('.DS_Store'):  # skip .DS_Store
-            continue
         # check if file is file (not directory)
         if os.path.isfile(os.path.join(directory, filename)):
             # make full path to the file
@@ -37,36 +36,12 @@ def find_duplicates(directory):
                         # if we don't have this hash in dictionary -> append it
                         hash_dict[hash_value] = image_path
             except UnidentifiedImageError:
-                print(f"Can not to read image: {image_path}")
+                logging.info(f"Can not to read image: {image_path}")
     # return dictionary of duplicates
     return duplicate_images
 
 
-def show_duplicates(duplicate_dict):
-    # check every pair in duplicates dictionary
-    for original_image, duplicates in duplicate_dict.items():
-        # make figure to show original and his duplicates
-        plt.figure()
-        # make left subplot to show original
-        plt.subplot(1, len(duplicates) + 1, 1)
-        # show original
-        original_img = Image.open(original_image)
-        plt.imshow(original_img)
-        plt.axis('off')
-        plt.title('Original')
-        # check all duplicates of original image
-        for i, duplicate_image in enumerate(duplicates):
-            # make subplot to show duplicate
-            plt.subplot(1, len(duplicates) + 1, i + 2)
-            # show duplicate image
-            img = Image.open(duplicate_image)
-            plt.imshow(img)
-            plt.axis('off')
-            plt.title('Duplicate')
-        plt.show()
-
-
-def delete_duplicates(duplicate_dict, index_to_delete):
+async def delete_duplicates(duplicate_dict, index_to_delete):
     # check every pair in duplicates dictionary
     for original_image, duplicates in duplicate_dict.items():
         # check if the index doesn't go beyond the list of duplicates
@@ -77,12 +52,12 @@ def delete_duplicates(duplicate_dict, index_to_delete):
             if os.path.exists(path_to_delete):
                 # delete file
                 os.remove(path_to_delete)
-                print(f"Удален дубликат: {path_to_delete}")
+                logging.info(f"Удален дубликат: {path_to_delete}")
             else:
-                print(f"Файл для удаления не найден: {path_to_delete}")
+                logging.info(f"Файл для удаления не найден: {path_to_delete}")
                 break
 
-directory = "images"
-duplicates = find_duplicates(directory)
-show_duplicates(duplicates)
-delete_duplicates(duplicates, 0)
+
+async def main(directory):
+    duplicates = await find_duplicates(directory)
+    await delete_duplicates(duplicates, 0)
