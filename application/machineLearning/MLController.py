@@ -8,6 +8,7 @@ from machineLearning import find_similar_color
 from machineLearning import clip_finder
 from machineLearning import find_complementary
 from machineLearning import find_images
+from machineLearning import image_classifier
 
 
 @asynccontextmanager
@@ -20,17 +21,21 @@ async def lifespan(app: FastAPI):
 
     yield
 
+
 app = FastAPI(lifespan=lifespan)
+
 
 @app.post("/delete_duplicate")
 async def deleteDuplicates():
     await delete_duplications.main(ctx.imagesDir)
     return {"message": "duplications have been deleted"}
 
+
 @app.post("/background_deletion")
 async def backgroundDeletion():
     await background_deletion.delete_background(ctx.imagesDir, ctx.images_without_background)
     return {"message": "background has been deleted"}
+
 
 @app.post("/background_insertion")
 async def backgroundInsertion(imageCount: int):
@@ -41,10 +46,12 @@ async def backgroundInsertion(imageCount: int):
 
     return {"message": "background has been inserted"}
 
+
 @app.post("/find_similar_by_color")
 async def findSimilarByColor(red: int, green: int, blue: int):
     await find_similar_color.search_image(red, green, blue, ctx.images_without_background, ctx.similar_colors)
     return {"message": "similar images have been found"}
+
 
 @app.post("/find_complementary_by_color")
 async def findComplementaryByColor(red: int, green: int, blue: int):
@@ -52,12 +59,20 @@ async def findComplementaryByColor(red: int, green: int, blue: int):
                                           ctx.similar_complementary_color)
     return {"message": "complementary images have been found"}
 
+
 @app.post("/find_image_by_text")
 async def findImageByText(searchByText: str):
     await clip_finder.main(searchByText, ctx.images_without_background, ctx.clip_output_folder)
     return {"message": "images have been found"}
 
+
 @app.post("/find_similar_images")
 async def findSimilarImages():
     await find_images.main(ctx.source_image, ctx.images_without_background, ctx.similar_images)
     return {"message": "similar images have been found"}
+
+
+@app.post("/image_classifier")
+async def imageClassifier(imagePath: str):
+    result = await image_classifier.predict_image_class(f"./bigPredict/{imagePath}")
+    return result
