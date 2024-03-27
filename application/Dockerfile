@@ -1,10 +1,12 @@
 FROM python:latest
-WORKDIR /src
+WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-ADD requirements.txt requirements.txt
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install poetry
+COPY pyproject.toml poetry.lock /app/
 
-COPY app app
-ENTRYPOINT ["uvicorn", "app.ScraperController:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN poetry lock
+
+RUN poetry install
+COPY . /app/

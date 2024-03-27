@@ -1,13 +1,21 @@
 version: '3.8'
 
 services:
+  dependencies:
+    build:
+      context: .
+      dockerfile: Dockerfile
+  machine_learning:
+    container_name: ml_service
+    build: ./machine_learning
+    ports:
+      - '8080:8080'
+    restart: always
   app:
     container_name: scraper_app
-    build: ./
+    build: ./app
     depends_on:
       - db
-#    command: "bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.ScraperController:app
-#    --reload'"
     volumes:
       - .container_images:/src/images
     ports:
