@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "mymlproj"
+version = "0.1.0"
+description = ""
+authors = ["Viltsev <94001621+Viltsev@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.109.1"
+pydantic = "^2.6.0"
+uvicorn = "^0.27.0"
+psycopg2 = "~=2.9.9"
+SQLAlchemy = "~=2.0.27"
+httpx = "~=0.26.0"
+requests = "~=2.31.0"
+beautifulsoup4 = "~=4.12.2"
+Pillow = "~=9.3.0"
+asyncio = "~=3.4.0"
+uuid = "~=1.30.0"
+lxml = "~=4.7.0"
+opencv-python-headless = "*"
+rembg = { version = "*", python = ">=3.8,<3.13" }
+urllib3 = "~=2.2.1"
+torch = "~=2.2.1"
+imagehash = "~=4.3.1"
+colormath = "~=3.0.0"
+numpy = "~=1.26.4"
+keras = "~=3.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
